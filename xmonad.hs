@@ -1,6 +1,8 @@
 import XMonad
 import XMonad.Config.Xfce
 import XMonad.Config.Desktop
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageDocks
  
 myLayout = desktopLayoutModifiers $ tiledHalf ||| tiledTwoThirds ||| tiledThreeQuarters ||| Mirror tiledTwoThirds ||| Full  
  where  
@@ -13,6 +15,18 @@ myLayout = desktopLayoutModifiers $ tiledHalf ||| tiledTwoThirds ||| tiledThreeQ
       nmaster = 1  
    
       -- Percent of screen to increment by when resizing panes  
-      delta = 5/100  
+      delta = 5/100
+
+myManageHook = composeAll . concat $
+	[
+		[manageDocks],
+		[resource =? "synapse" 	--> doIgnore,
+		 resource =? "xfce4-notifyd" 	--> doIgnore
+		]
+	]
    
-main = xmonad $ xfceConfig { layoutHook = myLayout }
+main = xmonad $ xfceConfig { 
+	layoutHook = myLayout,
+	modMask = mod4Mask,
+	manageHook = myManageHook <+> manageHook xfceConfig
+}
